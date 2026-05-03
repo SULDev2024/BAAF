@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Phylo Lab{% endblock %}
+{% block content %}
+<h1 class="m-0 text-[17px] font-semibold text-slate-900">Sign in</h1>
+<p class="mt-2 text-[17px] text-slate-600">Use your account to run analyses and view saved results.</p>
+
+<form method="post" class="mt-8 space-y-5" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    <div class="phylo-form-errors" role="alert">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div>
+    <label for="{{ form.username.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">Username</label>
+    {{ form.username }}
+    {{ form.username.errors }}
+  </div>
+  <div>
+    <label for="{{ form.password.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">Password</label>
+    {{ form.password }}
+    {{ form.password.errors }}
+  </div>
+
+  <button type="submit" class="minimal-button-primary w-full">Sign in</button>
+</form>
+
+<p class="mb-0 mt-6 text-center text-[17px] text-slate-600">
+  No account? <a href="{% url 'register' %}" class="font-semibold text-blue-600 no-underline hover:underline">Register</a>
+</p>
+{% endblock %}

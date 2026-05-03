@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+db.sqlite3
+
+ui/node_modules/
+ui/.vite/
+ui/node_modules/.vite-temp/
+
+simple-algorithm-output/
+

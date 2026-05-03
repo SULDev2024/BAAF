@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Recent runs{% endblock %}
+{% block header_title %}Recent runs{% endblock %}
+{% block header_sub %}<p class="mt-0.5 text-[16px] text-slate-500">Open a recent algorithm run and inspect summary, graphs, and step-by-step calculations.</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-4">
+  {% if runs %}
+    {% for run in runs %}
+      <article class="minimal-card p-5 sm:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <a href="{% url 'algo_lab' %}?run_id={{ run.id }}" class="m-0 text-[17px] font-semibold text-slate-900 no-underline hover:text-cyan-700">{{ run.title|default:"Untitled run" }}</a>
+            <p class="m-0 mt-1 text-[14px] text-slate-500">{{ run.created_at|date:"M j, Y g:i a" }}</p>
+          </div>
+          <span class="rounded bg-cyan-50 px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-cyan-700">{{ run.analysis_type }}</span>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2 sm:gap-3">
+          <a href="{% url 'algo_lab' %}?run_id={{ run.id }}" class="minimal-button-primary text-[17px] py-2">Open in algorithm page</a>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <div class="minimal-card p-8 text-center text-[17px] text-slate-500">No recent runs yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

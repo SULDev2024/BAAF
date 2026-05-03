@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Topic 15{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+{% block header_sub %}<p class="mt-0.5 truncate text-[17px] text-slate-500">Phylogenetic reconstruction (distance and character methods).</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6">
+  <div class="minimal-card p-6 sm:p-8">
+    <p class="m-0 text-[17px] leading-relaxed text-slate-600">
+      Open the <strong class="text-slate-800">Algorithm lab</strong> for UPGMA, Neighbor Joining, hierarchical clustering, Fitch and Sankoff parsimony,
+      maximum parsimony quartet search, JC69 maximum likelihood, four-point tests, and more — all computed in your browser with D3.js visualizations. Saved runs from older sessions are still listed under
+      <strong class="text-slate-800">Results</strong>.
+    </p>
+    <p class="mb-0 mt-4 text-[17px] font-semibold text-slate-900">Saved runs: <span class="mono-value">{{ phylo_saved_runs }}</span></p>
+  </div>
+
+  <div>
+    <h2 class="mb-3 px-1 text-[17px] font-bold uppercase tracking-widest text-slate-400">Start or review</h2>
+    <ul class="m-0 list-none space-y-3 p-0">
+      <li>
+        <a href="{% url 'algo_lab' %}" class="minimal-card flex items-start gap-4 p-5 no-underline transition-colors hover:border-blue-200">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">Lab</span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-semibold text-slate-900">Algorithm lab</span>
+            <span class="mt-1 block text-[17px] text-slate-500">Eleven reconstruction methods (including MP search and JC69 ML), matrices, step-through UPGMA/NJ, and D3 trees.</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'results_index' %}" class="minimal-card flex items-start gap-4 p-5 no-underline transition-colors hover:border-blue-200">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">R</span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-semibold text-slate-900">Results</span>
+            <span class="mt-1 block text-[17px] text-slate-500">Browse saved runs and open summary, graphs, or steps.</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'recent_runs' %}" class="minimal-card flex items-start gap-4 p-5 no-underline transition-colors hover:border-blue-200">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">↻</span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-semibold text-slate-900">Recent runs</span>
+            <span class="mt-1 block text-[17px] text-slate-500">Your latest saved analyses.</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

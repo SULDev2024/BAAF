@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Algorithm lab — Topic 15{% endblock %}
+{% block header_title %}<span id="algo-header-title">UPGMA Reconstruction</span>{% endblock %}
+{% block header_sub %}<span id="algo-status-badge" class="minimal-badge">Ready</span>{% endblock %}
+{% block header_actions %}
+<button type="button" id="algo-reset" class="minimal-button-secondary">Reset Data</button>
+<button type="button" id="algo-run" class="minimal-button-primary">Run Algorithm</button>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-[1400px]">
+  {% csrf_token %}
+  <section id="sec-upgma" class="algo-section">
+  <div class="grid grid-cols-12 gap-6">
+    <div class="col-span-4 flex flex-col gap-6">
+      <div class="minimal-card p-5">
+        <h3 id="upgma-matrix-title" class="mb-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Distance Matrix (n=0)</h3>
+        <p id="upgma-err" class="hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+        <div id="upgma-dist-grid" class="overflow-x-auto"></div>
+        <button type="button" id="upgma-run" class="hidden">Run</button>
+      </div>
+      <div class="minimal-card p-5">
+        <h3 class="mb-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Step-by-Step Visualization</h3>
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-500 font-semibold uppercase tracking-tight">Current Step</span>
+          <span id="upgma-step-label" class="font-mono font-bold text-cyan-600"></span>
+        </div>
+        <div class="mt-3 flex gap-2">
+          <button type="button" id="upgma-step-prev" class="minimal-button-secondary flex-1">Previous</button>
+          <button type="button" id="upgma-step-next" class="minimal-button-primary flex-1">Next</button>
+        </div>
+        <button type="button" id="upgma-step-all" class="minimal-button-secondary mt-2 w-full">Restart</button>
+      </div>
+    </div>
+    <div class="col-span-8 flex flex-col gap-6">
+      <div id="upgma-viz-card" class="minimal-card p-5 min-h-[160px] flex flex-col">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Dendrogram (Cladogram)</h3>
+          <div class="flex gap-3">
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-cyan-500 rounded-full"></div><span class="text-[10px] text-slate-400 font-bold uppercase">Taxa</span></div>
+            <div class="flex items-center gap-1.5"><div class="w-2 h-2 bg-slate-300 rounded-full"></div><span class="text-[10px] text-slate-400 font-bold uppercase">Merge</span></div>
+          </div>
+        </div>
+        <div id="upgma-dendro" class="min-h-[120px] flex-1 rounded border border-slate-100 bg-slate-50/50"></div>
+      </div>
+      <div class="minimal-card p-5">
+        <h3 class="mb-4 text-xs font-bold uppercase text-slate-500 tracking-wider">Merge History</h3>
+        <div id="upgma-merge-table" class="overflow-x-auto text-[15px]"></div>
+      </div>
+    </div>
+  </div>
+  </section>
+  <div class="mt-6 space-y-4">
+    <section id="sec-nj" class="algo-section minimal-card p-5 hidden">
+      <h3 id="nj-title" class="text-xs font-bold uppercase text-slate-500 tracking-wider">02 Neighbor Joining (n=0)</h3>
+      <p id="nj-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <button type="button" id="nj-same-matrix" class="minimal-button-secondary mt-3">Use same matrix as UPGMA</button>
+      <div id="nj-dist-grid" class="mt-3 overflow-x-auto"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="nj-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="nj-run" class="hidden">Run</button>
+      </div>
+      <div id="nj-force" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+      <div id="nj-step-controls" class="mt-3 hidden flex-wrap gap-2">
+        <button type="button" id="nj-step-prev" class="minimal-button-secondary">Previous</button>
+        <button type="button" id="nj-step-next" class="minimal-button-secondary">Next</button>
+        <button type="button" id="nj-step-all" class="minimal-button-secondary">Run all</button>
+        <span id="nj-step-label" class="text-slate-600"></span>
+      </div>
+      <div id="nj-q-display" class="mt-3 overflow-x-auto hidden"></div>
+      <div id="nj-d-display" class="mt-3 overflow-x-auto hidden"></div>
+      <div id="nj-merge-table" class="mt-4 overflow-x-auto text-[15px] hidden"></div>
+    </section>
+
+    <section id="sec-4pt" class="algo-section minimal-card p-5 hidden">
+      <h3 id="fp-title" class="text-xs font-bold uppercase text-slate-500 tracking-wider">03 Four-Point Condition (n=0)</h3>
+      <p id="fp-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <button type="button" id="fp-same-matrix" class="minimal-button-secondary mt-3">Use same matrix</button>
+      <div id="fp-dist-grid" class="mt-3 overflow-x-auto"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="fp-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="fp-run" class="hidden">Run</button>
+      </div>
+      <div id="fp-badge" class="mt-4 hidden"></div>
+      <div id="fp-table" class="mt-4 max-h-80 overflow-auto hidden"></div>
+    </section>
+
+    <section id="sec-hc" class="algo-section minimal-card p-5 hidden">
+      <h3 id="hc-title" class="text-xs font-bold uppercase text-slate-500 tracking-wider">04 Hierarchical Clustering (n=0)</h3>
+      <p id="hc-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <button type="button" id="hc-same-matrix" class="minimal-button-secondary mt-3">Use same matrix</button>
+      <div id="hc-dist-grid" class="mt-3 overflow-x-auto"></div>
+      <fieldset class="mt-3 flex flex-wrap gap-4 border-0 p-0">
+        <label class="flex items-center gap-2"><input type="radio" name="hc-link" value="single" /> Single</label>
+        <label class="flex items-center gap-2"><input type="radio" name="hc-link" value="complete" /> Complete</label>
+        <label class="flex items-center gap-2"><input type="radio" name="hc-link" value="average" checked /> Average</label>
+      </fieldset>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="hc-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="hc-run" class="hidden">Run</button>
+      </div>
+      <div id="hc-dendro" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+      <div id="hc-merge-table" class="mt-4 overflow-x-auto text-[15px] hidden"></div>
+    </section>
+
+    <section id="sec-fitch" class="algo-section minimal-card p-5 hidden">
+      <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">05 Fitch Parsimony</h3>
+      <p id="fitch-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <label class="mt-2 block font-medium text-slate-700">Newick</label>
+      <textarea id="fitch-newick" class="mt-1 w-full rounded border border-slate-200 p-2 font-mono" rows="2">((A,B),(C,(D,E)));</textarea>
+      <div class="mt-3 flex items-center gap-4">
+        <label><input type="radio" name="char-mode" value="binary" checked /> Binary</label>
+        <label><input type="radio" name="char-mode" value="dna" /> DNA</label>
+      </div>
+      <div id="fitch-char-grid" class="mt-3 overflow-x-auto"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="fitch-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="fitch-run" class="hidden">Run</button>
+      </div>
+      <div id="fitch-card" class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 font-semibold text-emerald-900 hidden"></div>
+      <div id="fitch-tree" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+      <div id="fitch-table" class="mt-4 overflow-x-auto hidden"></div>
+    </section>
+
+    <section id="sec-sankoff" class="algo-section minimal-card p-5 hidden">
+      <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">06 Sankoff Algorithm</h3>
+      <p id="sankoff-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <button type="button" id="sankoff-same-char" class="minimal-button-secondary mt-3">Use same characters as Fitch</button>
+      <label class="mt-3 block font-medium">Newick</label>
+      <textarea id="sankoff-newick" class="mt-1 w-full rounded border border-slate-200 p-2 font-mono" rows="2">((A,B),(C,(D,E)));</textarea>
+      <div id="sankoff-char-grid" class="mt-3 overflow-x-auto"></div>
+      <div id="sankoff-cost" class="mt-3 overflow-x-auto"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="sankoff-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="sankoff-run" class="hidden">Run</button>
+      </div>
+      <div id="sankoff-card" class="mt-3 rounded-lg border border-slate-200 bg-white p-4 font-semibold hidden"></div>
+      <div id="sankoff-tree" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+    </section>
+
+    <section id="sec-pp" class="algo-section minimal-card p-5 hidden">
+      <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">07 Perfect Phylogeny</h3>
+      <p id="pp-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <button type="button" id="pp-same-char" class="minimal-button-secondary mt-3">Use same characters</button>
+      <div id="pp-char-grid" class="mt-3 overflow-x-auto"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="pp-example" class="minimal-button-secondary">Load example</button>
+        <button type="button" id="pp-run" class="hidden">Run</button>
+      </div>
+      <div id="pp-banner" class="mt-4 hidden"></div>
+      <div id="pp-heatmap" class="mt-4 overflow-x-auto hidden"></div>
+      <div id="pp-bad-pairs" class="mt-4 text-slate-700 hidden"></div>
+    </section>
+
+    <section id="sec-mp" class="algo-section minimal-card p-5 hidden">
+      <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">08 Maximum Parsimony (MP)</h3>
+      <p class="mt-2 text-[15px] leading-relaxed text-slate-600">MP follows Occam’s razor: minimize evolutionary steps. Informative sites (≥2 states, each in ≥2 sequences) drive the search; for <strong>four taxa</strong> all three unrooted quartets are scored with Fitch’s algorithm. With more taxa, exhaustive search explodes—use branch-and-bound or heuristics (NNI, SPR) in PAUP* or IQ-TREE.</p>
+      <p id="mp-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+      <label class="mt-3 block text-sm font-medium text-slate-700">Aligned input (<code class="text-xs">taxon: SEQUENCE</code> per line)</label>
+      <textarea id="mp-input" class="mt-1 w-full rounded border border-slate-200 p-2 font-mono text-[13px]" rows="7">a: ATTGCCA
+b: ATCGACT
+c: AGTAACA
+d: TGTAACT</textarea>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="mp-run" class="hidden">Run</button>
+      </div>
+      <div id="mp-alignment-wrap" class="mt-4 hidden">
+        <h4 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Alignment (informative columns highlighted)</h4>
+        <div id="mp-alignment-matrix" class="mt-2 overflow-x-auto text-[13px]"></div>
+      </div>
+      <div id="mp-informative-wrap" class="mt-4 hidden">
+        <h4 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Site classification</h4>
+        <div id="mp-informative-table" class="mt-2 overflow-x-auto text-[13px]"></div>
+      </div>
+      <div id="mp-triple-topo-row" class="mt-6 hidden flex flex-wrap justify-center gap-4">
+        <div class="flex w-[min(100%,280px)] flex-col items-center gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Tree 1</span>
+          <div id="mp-topo-0" class="min-h-[200px] w-full rounded border border-slate-100 bg-slate-50/80"></div>
+        </div>
+        <div class="flex w-[min(100%,280px)] flex-col items-center gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Tree 2</span>
+          <div id="mp-topo-1" class="min-h-[200px] w-full rounded border border-slate-100 bg-slate-50/80"></div>
+        </div>
+        <div class="flex w-[min(100%,280px)] flex-col items-center gap-1">
+          <span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Tree 3</span>
+          <div id="mp-topo-2" class="min-h-[200px] w-full rounded border border-slate-100 bg-slate-50/80"></div>
+        </div>
+      </div>
+      <div id="mp-score-wrap" class="mt-6 hidden">
+        <h4 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Fitch steps on informative sites only (per topology)</h4>
+        <div id="mp-score-table" class="mt-2 overflow-x-auto text-[13px]"></div>
+      </div>
+      <p id="mp-note" class="mt-3 hidden text-[14px] text-slate-600"></p>
+      <div id="mp-best-wrap" class="mt-4 hidden rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900">
+        <p class="m-0 text-sm font-semibold">Most parsimonious unrooted tree</p>
+        <p id="mp-best-newick" class="mt-1 mb-0 font-mono text-[13px]"></p>
+        <p id="mp-best-score" class="mt-2 mb-0 text-sm"></p>
+      </div>
+      <div id="mp-tree-viz" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+    </section>
+
+    <section id="sec-ml" class="algo-section minimal-card p-5 hidden">
+      <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider">09 Maximum Likelihood (ML)</h3>
+      <p class="mt-2 text-[15px] leading-relaxed text-slate-600">ML follows Figure 5: <strong>model test</strong> on a three-taxon <strong>star</strong> (branch lengths optimized per model), <strong>AIC</strong> to pick JC69 / K80 / HKY, then <strong>tree search</strong> over three rooted topologies with <strong>branch-length optimization</strong> under the winning model (Felsenstein pruning + reversible Q).</p>
+      <p id="ml-err" class="mt-3 hidden rounded border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"></p>
+
+      <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50/80 p-5">
+        <p class="m-0 text-center text-[11px] font-bold uppercase tracking-widest text-slate-500">1 · Substitution models (fitted to your data)</p>
+        <div id="ml-matrices-row" class="mt-4 flex flex-wrap items-end justify-center gap-8">
+          <div class="text-center">
+            <p class="mb-1 text-[12px] font-semibold text-slate-800">JC69</p>
+            <div id="ml-mat-jc69" class="min-h-[108px]"></div>
+            <p id="ml-stat-jc69" class="mt-1 max-w-[140px] text-[10px] leading-snug text-slate-600"></p>
+          </div>
+          <div class="text-center">
+            <p class="mb-1 text-[12px] font-semibold text-slate-800">K80</p>
+            <div id="ml-mat-k80" class="min-h-[108px]"></div>
+            <p id="ml-stat-k80" class="mt-1 max-w-[140px] text-[10px] leading-snug text-slate-600"></p>
+          </div>
+          <div class="text-center">
+            <p class="mb-1 text-[12px] font-semibold text-slate-800">HKY85</p>
+            <div id="ml-mat-hky" class="min-h-[108px]"></div>
+            <p id="ml-stat-hky" class="mt-1 max-w-[140px] text-[10px] leading-snug text-slate-600"></p>
+          </div>
+        </div>
+        <div class="mt-5 flex justify-center">
+          <div class="rounded-full border border-slate-300 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">Model test (AIC) →</div>
+        </div>
+        <div id="ml-best-model-panel" class="mt-5 hidden rounded-xl border-2 border-amber-400 bg-amber-50/90 p-4 shadow-sm">
+          <p class="m-0 text-center text-[11px] font-bold uppercase tracking-widest text-amber-900">Best model</p>
+          <div id="ml-mat-best" class="mt-2 flex min-h-[108px] justify-center"></div>
+          <p id="ml-best-model-text" class="mt-2 text-center text-[14px] font-medium leading-relaxed text-slate-900"></p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-center">
+        <div class="rounded-full border border-slate-300 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">Tree search →</div>
+      </div>
+      <label class="mt-4 block text-sm font-medium text-slate-700">Aligned DNA — <strong>three taxa</strong> (Figure 5). Use four taxa only for the simplified quartet panel (JC69 fixed).</label>
+      <textarea id="ml-input" class="mt-1 w-full rounded border border-slate-200 p-2 font-mono text-[13px]" rows="5">a: ATC
+b: GCC
+c: AAG</textarea>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button type="button" id="ml-run" class="hidden">Run</button>
+      </div>
+      <p class="mt-4 text-center text-[11px] font-bold uppercase tracking-widest text-slate-500">Candidate topologies</p>
+      <div class="mt-2 flex flex-wrap justify-center gap-3">
+        <div id="ml-cand-0" class="w-[min(100%,220px)] min-h-[200px] flex-1 rounded-xl border-2 border-amber-300/70 bg-white p-1 shadow-sm"></div>
+        <div id="ml-cand-1" class="w-[min(100%,220px)] min-h-[200px] flex-1 rounded-xl border-2 border-sky-400/70 bg-white p-1 shadow-sm"></div>
+        <div id="ml-cand-2" class="w-[min(100%,220px)] min-h-[200px] flex-1 rounded-xl border-2 border-fuchsia-400/70 bg-white p-1 shadow-sm"></div>
+      </div>
+      <div class="mt-4 flex justify-center">
+        <div class="rounded-full border border-slate-300 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">Maximize likelihood (Nelder–Mead) →</div>
+      </div>
+      <div id="ml-score-wrap" class="mt-4 hidden">
+        <h4 class="text-xs font-bold uppercase text-slate-500 tracking-wider">Log-likelihood by topology (optimized branches, winning model)</h4>
+        <div id="ml-score-table" class="mt-2 overflow-x-auto text-[13px]"></div>
+      </div>
+      <p id="ml-note" class="mt-3 hidden text-[14px] text-slate-600"></p>
+      <div id="ml-best-wrap" class="mt-4 hidden rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-950">
+        <p class="m-0 text-sm font-semibold">Optimal topology (highest log-likelihood)</p>
+        <p id="ml-best-newick" class="mt-1 mb-0 font-mono text-[13px]"></p>
+        <p id="ml-best-ll" class="mt-2 mb-0 text-sm"></p>
+      </div>
+      <div id="ml-tree-viz" class="mt-4 min-h-[120px] rounded border border-slate-100 hidden"></div>
+    </section>
+  </div>
+  <div id="upgma-matrix-step" class="hidden"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script type="module" src="{% static 'phylo/algo-lab/app.js' %}"></script>
+{% endblock %}

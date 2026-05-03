@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@source "../../templates/**/*.html";
+@source "../../phylo/templates/**/*.html";
+@source "../../../UI/src/**/*.tsx";
+
+@layer base {
+  html,
+  body,
+  body * {
+    font-size: 16px;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+@layer components {
+  .minimal-card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm;
+  }
+  .minimal-button-primary {
+    @apply px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded hover:bg-cyan-700 shadow-sm transition-colors inline-flex items-center justify-center no-underline;
+  }
+  .minimal-button-secondary {
+    @apply px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded hover:bg-slate-200 transition-colors inline-flex items-center justify-center no-underline;
+  }
+  .minimal-badge {
+    @apply px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase tracking-wide inline-flex items-center;
+  }
+  .phylo-control {
+    @apply w-full rounded border border-slate-200 p-2 text-sm bg-white;
+  }
+  select.phylo-control {
+    @apply cursor-pointer;
+  }
+  textarea.phylo-control {
+    @apply font-mono;
+  }
+  .phylo-errorlist {
+    @apply m-0 mt-1 list-none p-0 text-sm text-red-500;
+  }
+  .phylo-form-errors {
+    @apply mb-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700;
+  }
+}

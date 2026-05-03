@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block header_title %}Results{% endblock %}
+{% block header_sub %}<p class="mt-0.5 text-[16px] text-slate-500">All saved algorithm runs with calculations and graph views.</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-4">
+  {% if runs %}
+    {% for run in runs %}
+      <article class="minimal-card p-5">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="m-0 text-[16px] font-semibold text-slate-900">{{ run.title|default:"Untitled run" }}</p>
+            <p class="m-0 mt-1 text-[14px] text-slate-500">{{ run.created_at|date:"M j, Y g:i a" }}</p>
+          </div>
+          <span class="rounded bg-cyan-50 px-2 py-0.5 text-[12px] font-semibold uppercase tracking-wide text-cyan-700">{{ run.analysis_type }}</span>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="{% url 'run_summary' run.id %}" class="minimal-button-secondary">Summary</a>
+          <a href="{% url 'run_graphs' run.id %}" class="minimal-button-secondary">Graphs</a>
+          <a href="{% url 'run_steps' run.id %}" class="minimal-button-secondary">Calculations</a>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <div class="minimal-card p-8 text-center text-slate-500">No saved runs yet. Run an algorithm and it will appear here.</div>
+  {% endif %}
+</div>
+{% endblock %}

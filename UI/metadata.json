@@ -1,0 +1,6 @@
+ {
+  "name": "BioTree Explorer",
+  "description": "A comprehensive bioinformatics tree reconstruction dashboard for visualizing algorithms like UPGMA, Neighbor Joining, Parsimony, and NNI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

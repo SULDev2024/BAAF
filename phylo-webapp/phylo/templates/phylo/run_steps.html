@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Step details{% endblock %}
+{% block header_title %}Step details{% endblock %}
+{% block header_sub %}<p class="mt-0.5 truncate text-[17px] text-slate-500">{{ run.analysis_type }} · {{ run.title|default:"Untitled" }}</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6">
+  {% include "phylo/includes/run_tabs.html" with run=run %}
+
+  <div class="minimal-card p-5 sm:p-6">
+    {% if result_payload.detailed_steps %}
+      <h2 class="mb-4 mt-0 text-[17px] font-semibold text-slate-900">Distance method — step by step</h2>
+      <div class="space-y-4">
+        {% for step in result_payload.detailed_steps %}
+          <article class="rounded-lg border border-slate-100 bg-slate-50/80 p-4">
+            <p class="m-0 font-semibold text-slate-900">Iteration {{ step.iteration }}</p>
+            {% if step.selected_pair %}
+              <p class="mb-0 mt-2 text-[17px] text-slate-700">Selected pair: {{ step.selected_pair.0 }} — {{ step.selected_pair.1 }}</p>
+            {% endif %}
+            {% if step.selected_distance %}
+              <p class="mb-0 mt-2 text-[17px] text-slate-700">Selected distance: {{ step.selected_distance }}</p>
+            {% endif %}
+            {% if step.selected_q %}
+              <p class="mb-0 mt-2 text-[17px] text-slate-700">Selected Q: {{ step.selected_q }}</p>
+            {% endif %}
+            {% if step.update_calculations %}
+              <p class="mb-2 mt-3 text-[17px] font-semibold text-slate-800">Update formulas</p>
+              <ul class="m-0 list-disc space-y-1 pl-5 text-[17px] text-slate-700">
+                {% for calc in step.update_calculations %}
+                  <li>{{ calc.formula }} = {{ calc.value }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% elif result_payload.site_breakdown %}
+      <h2 class="mb-4 mt-0 text-[17px] font-semibold text-slate-900">Parsimony — site by site</h2>
+      <div class="space-y-4">
+        {% for site in result_payload.site_breakdown %}
+          <article class="rounded-lg border border-slate-100 bg-slate-50/80 p-4">
+            <p class="m-0 font-semibold text-slate-900">Site {{ site.site_index }} <span class="font-normal text-slate-500">|</span> {{ site.states }}</p>
+            <ul class="m-0 mt-2 list-disc space-y-1 pl-5 text-[17px] text-slate-700">
+              {% for topology, score in site.scores.items %}
+                <li>{{ topology }} → {{ score }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+        {% endfor %}
+      </div>
+    {% elif result_payload.tables %}
+      <h2 class="mb-4 mt-0 text-[17px] font-semibold text-slate-900">Sankoff tables</h2>
+      <div class="space-y-4">
+        {% for t in result_payload.tables %}
+          <article class="rounded-lg border border-slate-100 bg-slate-50/80 p-4">
+            <p class="m-0 font-semibold text-slate-900">Position {{ t.position }}</p>
+            <pre class="m-0 mt-2 overflow-x-auto font-mono text-[14px] text-slate-700">{{ t.rootCosts }}</pre>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <h2 class="mb-4 mt-0 text-[17px] font-semibold text-slate-900">Saved calculations</h2>
+      <pre class="m-0 overflow-x-auto rounded-lg border border-slate-100 bg-slate-50 p-4 font-mono text-[14px] text-slate-800">{{ result_payload }}</pre>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

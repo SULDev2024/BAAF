@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Distance analysis{% endblock %}
+{% block header_title %}Distance analysis{% endblock %}
+{% block header_sub %}<p class="mt-0.5 text-[17px] text-slate-500">UPGMA or Neighbor Joining from a distance matrix.</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl space-y-6">
+  <div class="flex flex-wrap gap-2">
+    <a href="{% url 'dashboard' %}" class="minimal-button-secondary text-[17px] py-2">Dashboard</a>
+    <a href="{% url 'results_index' %}" class="minimal-button-secondary text-[17px] py-2">Results</a>
+  </div>
+
+  <div class="minimal-card p-6 sm:p-8">
+    <h2 class="mb-6 mt-0 text-[17px] font-semibold text-slate-900">Input</h2>
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="phylo-form-errors" role="alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div>
+        <label for="{{ form.title.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">{{ form.title.label }}</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+      <div>
+        <label for="{{ form.method.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">{{ form.method.label }}</label>
+        {{ form.method }}
+        {{ form.method.errors }}
+      </div>
+      <div>
+        <label for="{{ form.taxa.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">{{ form.taxa.label }}</label>
+        {{ form.taxa }}
+        {{ form.taxa.errors }}
+      </div>
+      <div>
+        <label for="{{ form.matrix.id_for_label }}" class="mb-1.5 block text-[17px] font-medium text-slate-700">{{ form.matrix.label }}</label>
+        {{ form.matrix }}
+        {{ form.matrix.errors }}
+        <p class="mt-2 text-[17px] text-slate-500">Example rows: 0,5,9,9 / 5,0,10,10 / 9,10,0,8 / 9,10,8,0</p>
+      </div>
+      <button type="submit" class="minimal-button-primary w-full sm:w-auto">Run analysis</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

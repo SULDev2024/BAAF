@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Run summary{% endblock %}
+{% block header_title %}Run summary{% endblock %}
+{% block header_sub %}<p class="mt-0.5 truncate text-[17px] text-slate-500">{{ run.analysis_type }} · {{ run.title|default:"Untitled" }} · {{ run.created_at }}</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-6">
+  {% include "phylo/includes/run_tabs.html" with run=run %}
+
+  <div class="minimal-card p-5 sm:p-6">
+    <h2 class="mb-3 mt-0 text-[17px] font-semibold uppercase tracking-wide text-slate-500">Input snapshot</h2>
+    <pre class="m-0 overflow-x-auto rounded-lg border border-slate-100 bg-slate-50 p-4 font-mono text-[17px] leading-relaxed text-slate-800">{{ input_payload }}</pre>
+  </div>
+
+  <div class="minimal-card p-5 sm:p-6">
+    <h2 class="mb-3 mt-0 text-[17px] font-semibold uppercase tracking-wide text-slate-500">Result summary</h2>
+    {% if result_payload.method or result_payload.newick %}
+      <p class="text-[17px] text-slate-700"><span class="font-semibold text-slate-900">Method:</span> {{ result_payload.method }}</p>
+      <p class="mb-2 mt-4 text-[17px] font-semibold text-slate-900">Newick</p>
+      <pre class="m-0 overflow-x-auto rounded-lg border border-slate-100 bg-slate-50 p-4 font-mono text-[17px] leading-relaxed text-slate-800">{{ result_payload.newick }}</pre>
+      <p class="mt-4 text-[17px] text-slate-600">Total steps: {{ result_payload.detailed_steps|length }}</p>
+    {% elif result_payload.minimum_tree or result_payload.scores %}
+      <p class="text-[17px] text-slate-700"><span class="font-semibold text-slate-900">Minimum frugality:</span> {{ result_payload.minimum_tree }} ({{ result_payload.minimum_score }})</p>
+      <p class="text-[17px] text-slate-700"><span class="font-semibold text-slate-900">Maximum frugality:</span> {{ result_payload.maximum_tree }} ({{ result_payload.maximum_score }})</p>
+      <p class="text-[17px] text-slate-600">Topologies tested: {{ result_payload.scores|length }}</p>
+    {% else %}
+      <pre class="m-0 overflow-x-auto rounded-lg border border-slate-100 bg-slate-50 p-4 font-mono text-[16px] leading-relaxed text-slate-800">{{ result_payload }}</pre>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

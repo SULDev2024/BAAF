@@ -1,0 +1,7 @@
+{# Expects variable: run #}
+<div class="mb-6 flex flex-wrap gap-2">
+  <a href="{% url 'results_index' %}" class="minimal-button-secondary text-[17px] py-2">Results list</a>
+  <a href="{% url 'run_summary' run.id %}" class="minimal-button-secondary text-[17px] py-2">Summary</a>
+  <a href="{% url 'run_graphs' run.id %}" class="minimal-button-secondary text-[17px] py-2">Graphs</a>
+  <a href="{% url 'run_steps' run.id %}" class="minimal-button-secondary text-[17px] py-2">Step details</a>
+</div>

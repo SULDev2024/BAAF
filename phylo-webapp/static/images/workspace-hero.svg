@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="500" viewBox="0 0 920 500" fill="none">
+  <defs>
+    <linearGradient id="heroBg" x1="40" y1="18" x2="860" y2="482" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F75F6" />
+      <stop offset="1" stop-color="#6A8CF5" />
+    </linearGradient>
+    <linearGradient id="panelBg" x1="628" y1="132" x2="774" y2="372" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D6E2FF" />
+      <stop offset="1" stop-color="#B8CBFF" />
+    </linearGradient>
+  </defs>
+
+  <rect width="920" height="500" rx="28" fill="url(#heroBg)" />
+  <rect x="18" y="18" width="884" height="464" rx="24" fill="#000000" fill-opacity="0.06" />
+  <rect x="28" y="28" width="864" height="444" rx="22" stroke="#FFFFFF" stroke-opacity="0.25" />
+
+  <text x="70" y="92" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="700">
+    Phylogenetic Analysis Workspace
+  </text>
+  <text x="70" y="132" fill="#EAF1FF" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600">
+    Explore UPGMA, Neighbor Joining, and Parsimony with step-by-step visuals.
+  </text>
+
+  <g opacity="0.46">
+    <path d="M80 188C102 166 119 168 141 188C163 208 179 210 201 188C223 166 241 168 263 188" stroke="#DCE8FF" stroke-width="5" stroke-linecap="round" />
+    <path d="M80 220C102 198 119 200 141 220C163 240 179 242 201 220C223 198 241 200 263 220" stroke="#DCE8FF" stroke-width="5" stroke-linecap="round" />
+    <line x1="95" y1="187" x2="95" y2="220" stroke="#DCE8FF" stroke-width="3.5" />
+    <line x1="126" y1="187" x2="126" y2="220" stroke="#DCE8FF" stroke-width="3.5" />
+    <line x1="157" y1="187" x2="157" y2="220" stroke="#DCE8FF" stroke-width="3.5" />
+    <line x1="188" y1="187" x2="188" y2="220" stroke="#DCE8FF" stroke-width="3.5" />
+    <line x1="219" y1="187" x2="219" y2="220" stroke="#DCE8FF" stroke-width="3.5" />
+  </g>
+
+  <g>
+    <path d="M100 364L206 243L292 292L378 178L470 236L566 146" stroke="#F4F8FF" stroke-width="5" stroke-linecap="round" />
+    <circle cx="100" cy="364" r="12" fill="#F5FAFF" />
+    <circle cx="206" cy="243" r="12" fill="#F5FAFF" />
+    <circle cx="292" cy="292" r="12" fill="#F5FAFF" />
+    <circle cx="378" cy="178" r="12" fill="#F5FAFF" />
+    <circle cx="470" cy="236" r="12" fill="#F5FAFF" />
+    <circle cx="566" cy="146" r="12" fill="#F5FAFF" />
+  </g>
+
+  <g>
+    <path d="M640 176C640 140 669 111 705 111C741 111 770 140 770 176V302C770 338 741 367 705 367C669 367 640 338 640 302V176Z" fill="url(#panelBg)" />
+    <rect x="662" y="139" width="84" height="102" rx="20" fill="#F8FBFF" />
+    <rect x="678" y="159" width="52" height="8" rx="4" fill="#5174EC" />
+    <rect x="678" y="177" width="52" height="8" rx="4" fill="#5174EC" />
+    <rect x="678" y="195" width="52" height="8" rx="4" fill="#5174EC" />
+
+    <circle cx="704" cy="286" r="40" fill="#EDF3FF" />
+    <circle cx="704" cy="286" r="27" fill="#FFFFFF" />
+    <path d="M704 286L722 274" stroke="#5174EC" stroke-width="4" stroke-linecap="round" />
+    <circle cx="704" cy="286" r="5" fill="#5174EC" />
+  </g>
+</svg>

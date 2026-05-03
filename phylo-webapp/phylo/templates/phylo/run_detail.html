@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Run detail{% endblock %}
+{% block header_title %}Run detail{% endblock %}
+{% block header_sub %}<p class="mt-0.5 truncate text-[17px] text-slate-500">{{ run.analysis_type }} · {{ run.title|default:"Untitled" }}</p>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-6">
+  <div class="flex flex-wrap gap-2">
+    <a href="{% url 'dashboard' %}" class="minimal-button-secondary text-[17px] py-2">Dashboard</a>
+    <a href="{% url 'results_index' %}" class="minimal-button-secondary text-[17px] py-2">Results</a>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="minimal-card p-5 sm:p-6">
+      <h2 class="mb-3 mt-0 text-[17px] font-semibold uppercase tracking-wide text-slate-500">Input</h2>
+      <pre class="m-0 overflow-x-auto rounded-lg border border-slate-100 bg-slate-50 p-3 font-mono text-[17px] text-slate-800">{{ input_payload }}</pre>
+      <h2 class="mb-3 mt-6 text-[17px] font-semibold uppercase tracking-wide text-slate-500">Result</h2>
+      <pre class="m-0 max-h-64 overflow-auto rounded-lg border border-slate-100 bg-slate-50 p-3 font-mono text-[17px] text-slate-800">{{ result_payload }}</pre>
+      <div id="detailStepPlayer" class="mt-6 hidden rounded-lg border border-slate-100 bg-slate-50 p-4">
+        <div class="mb-3 flex flex-wrap items-center gap-2">
+          <button type="button" id="prevDetailStep" class="minimal-button-secondary text-[17px] py-2">Previous step</button>
+          <p id="detailStepTitle" class="m-0 flex-1 text-center text-[17px] font-medium text-slate-600">Step 1</p>
+          <button type="button" id="nextDetailStep" class="minimal-button-secondary text-[17px] py-2">Next step</button>
+        </div>
+        <div id="detailStepGraph" class="mono text-[17px] text-slate-800"></div>
+      </div>
+    </div>
+    <div class="minimal-card p-5 sm:p-6">
+      <h2 class="mb-3 mt-0 text-[17px] font-semibold uppercase tracking-wide text-slate-500">Chart</h2>
+      <div class="rounded-lg border border-slate-100 bg-white p-2">
+        <canvas id="detailChart" class="h-64 w-full"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{{ result_payload|json_script:"detail-result-data" }}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const detailNode = document.getElementById("detail-result-data");
+  if (detailNode) {
+    const payload = JSON.parse(detailNode.textContent);
+    const ctx = document.getElementById("detailChart");
+    if (ctx && payload.scores) {
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(payload.scores),
+          datasets: [{ label: "Score", data: Object.values(payload.scores), backgroundColor: ["#2563eb", "#059669", "#dc2626"] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    } else if (ctx && payload.detailed_steps) {
+      const values = payload.detailed_steps.map((s) => s.selected_distance ?? s.d_ij ?? s.final_distance ?? 0);
+      const labels = payload.detailed_steps.map((s) => "Step " + (s.iteration ?? "?"));
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{ label: "Distance", data: values, borderColor: "#2563eb", backgroundColor: "rgba(37,99,235,0.15)", tension: 0.25 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+    if (payload.detailed_steps && payload.detailed_steps.length) {
+      let idx = 0;
+      const player = document.getElementById("detailStepPlayer");
+      const graph = document.getElementById("detailStepGraph");
+      const title = document.getElementById("detailStepTitle");
+      const prev = document.getElementById("prevDetailStep");
+      const next = document.getElementById("nextDetailStep");
+      if (player && graph && title && prev && next) {
+        player.classList.remove("hidden");
+        const render = () => {
+          const step = payload.detailed_steps[idx];
+          graph.innerHTML = step.step_graph_svg || "<p>No graph available.</p>";
+          title.textContent = "Step " + (idx + 1) + " / " + payload.detailed_steps.length;
+        };
+        prev.addEventListener("click", () => { idx = Math.max(0, idx - 1); render(); });
+        next.addEventListener("click", () => { idx = Math.min(payload.detailed_steps.length - 1, idx + 1); render(); });
+        render();
+      }
+    }
+  }
+</script>
+{% endblock %}
